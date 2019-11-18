@@ -4,7 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from decimal import Decimal as D
-
+from utils import generate_opaque_color
 driver = webdriver.Chrome()
 driver.get("http://www.python.org")
 
@@ -25,8 +25,7 @@ for node in elems:
     # ---Font Size ---
     #print(int(node.value_of_css_property('font-size').replace('px', '')) * D('0.75'))
     # --- Weight (bold is more than 500)
-
-    #print(node.value_of_css_property('font-weight'))
+    #print(int(node.value_of_css_property('font-weight')))
     # for styles in get_applicable_styles(node):
     #     if "color" in styles.keys():
     #         colors.append(normalise_color(styles['color']))
