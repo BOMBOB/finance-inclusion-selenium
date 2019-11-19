@@ -2,17 +2,16 @@ from decimal import Decimal as D
 
 def generate_opaque_color(color_stack):
     # http://stackoverflow.com/questions/10781953/determine-rgba-colour-received-by-combining-two-colours
-
     colors = []
     # Take colors back off the stack until we get one with an alpha of 1.0
-    # for c in color_stack[::-1]:
-    #     if int(c[3]) == 0:
-    #         continue
-    #     colors.append(c)
-    #     if c[3] == 1.0:
-    #         break
+    for c in color_stack[::-1]:
+        if int(c[3]) == 0:
+            continue
+        colors.append(c)
+        if c[3] == 1.0:
+            break
 
-    red, green, blue, alpha = color_stack
+    red, green, blue, alpha = colors[0]
 
     for r, g, b, a in colors[1:]:
         if a == 0:
@@ -53,3 +52,39 @@ def calculate_luminocity_ratio(foreground, background):
 
 def is_font_bold(elem):
     return int(elem.value_of_css_property('font-weight')) > 500
+
+def calculate_font_size(font_stack):
+    """
+    From a list of font declarations with absolute and relative fonts, generate an approximate rendered font-size in point (not pixels).
+    """
+    font_size = 10  # 10 pt *not 10px*!!
+
+    for font_declarations in font_stack:
+        size = font_declarations
+        if 'pt' in size:
+            font_size = int(size.split('pt')[0])
+        elif 'px' in size:
+            font_size = D(size.split('px')[0]) * D('0.75')  # WCAG claims about 0.75 pt per px
+        elif '%' in size:
+            font_size = font_size * D(size.split('%')[0]) / 100
+        # TODO: em and en
+    return font_size
+
+def is_font_bold(weight_stacks):
+    """
+    From a list of font declarations determine the font weight.
+    """
+    # Note: Bolder isn't relative!!
+    is_bold = False
+
+    for weight in weight_stacks:
+        #if 'bold' in weight or 'bold' in font_declarations.get('font', ""):
+            # Its bold! THe rest of the rules don't matter
+            #return True
+        #elif '0' in weight:
+            # its a number!
+            # Return if it is bold. The rest of the rules don't matter
+        return int(weight) > 500  # TODO: Whats the threshold for 'bold'??
+        # TODO: What if weight is defined in the 'font' rule?
+
+    return is_bold
